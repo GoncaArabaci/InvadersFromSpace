@@ -12,18 +12,14 @@ public class Player : MonoBehaviour
 
     bool isShooting;
     float coolDown = 0.5f;
+    [SerializeField] private ObjectPool objectPool = null;
 
     private void Awake()
     {
         cam = Camera.main;
         width = ((1 / (cam.WorldToViewportPoint(new Vector3(1, 1, 0)).x - .5f) / 2) - 0.25f);
     }
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
 #if UNITY_EDITOR
@@ -35,16 +31,20 @@ public class Player : MonoBehaviour
         {
             transform.Translate(Vector2.right * Time.deltaTime * speed);
         }
-        if (Input.GetKey(KeyCode.Space) && !isShooting) {
+        if (Input.GetKey(KeyCode.Space) && !isShooting) 
+        {
             StartCoroutine(Shoot());
         }
 #endif
     }
+
     private IEnumerator Shoot()
     {
         isShooting = true;
 
-        Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        //Instantiate(bulletPrefab, transform.position, Quaternion.identity);
+        GameObject obj = objectPool.getPooledObject();
+        obj.transform.position = gameObject.transform.position;
         yield return new WaitForSeconds(coolDown);
 
         isShooting = false;
